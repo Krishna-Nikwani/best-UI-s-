@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>J.A.R.V.I.S. Core Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&family=Orbitron:wght@700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#e2e8f0",
+              accent: "#ef4444",
+              "background-light": "#f8fafc",
+              "background-dark": "#000000",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'spin-slow': 'spin 12s linear infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'wave': 'wave 3s ease-in-out infinite',
+              'orbit': 'orbit 10s linear infinite',
+              'ring-rotate': 'ring-rotate 16s linear infinite',
+              'fade-in': 'fade-in 300ms ease-out',
+              'slide-up': 'slide-up 200ms ease-out',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              wave: {
+                '0%, 100%': { opacity: 0.2, transform: 'scale(1)' },
+                '50%': { opacity: 0.6, transform: 'scale(1.05)' },
+              },
+              orbit: {
+                '0%': { transform: 'rotate(0deg) translateX(150px) rotate(0deg)' },
+                '100%': { transform: 'rotate(360deg) translateX(150px) rotate(-360deg)' },
+              },
+              'ring-rotate': {
+                '0%': { transform: 'rotate(0deg)' },
+                '100%': { transform: 'rotate(360deg)' },
+              },
+              'fade-in': {
+                '0%': { opacity: 0 },
+                '100%': { opacity: 1 },
+              },
+              'slide-up': {
+                '0%': { transform: 'translateY(6px)', opacity: 0 },
+                '100%': { transform: 'translateY(0)', opacity: 1 },
+              }
+            }
+          },
+        },
+      };
+    </script>
+<link rel="stylesheet" href="assets/ui.css" />
+</head>
+<body class="dark bg-background-dark text-slate-300 font-display">
+  <div class="fixed inset-0 pointer-events-none grain z-50"></div>
+  <div class="fixed inset-0 scanline"></div>
+  <!-- Background particles canvas -->
+  <canvas id="bgParticles" class="fixed inset-0 -z-10"></canvas>
+  <!-- Gradient corners and vignette -->
+  <div class="pointer-events-none fixed inset-0" id="fxLayers"></div>
+
+  <!-- Top status -->
+  <div class="absolute top-8 left-8 flex items-center gap-4 z-40">
+    <div class="w-12 h-12 rounded-full border border-cyan-400/40 bg-gradient-to-br from-cyan-500/8 to-blue-500/5 flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(103,232,249,0.2)] glow-pulse">
+      <span class="material-symbols-outlined text-sm text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">sensors</span>
+    </div>
+    <div class="flex flex-col px-3 py-1.5 bg-black/40 rounded-lg border border-cyan-400/25 shadow-[0_0_12px_rgba(103,232,249,0.15)] backdrop-blur-sm">
+      <span class="text-[10px] uppercase tracking-widest opacity-70 font-mono text-cyan-200">System Integrity</span>
+      <span class="text-xs font-mono text-emerald-400 font-semibold drop-shadow-[0_0_6px_rgba(16,185,129,0.6)]">OPTIMAL</span>
+    </div>
+  </div>
+
+  <div class="absolute top-8 right-8 flex items-center gap-6 z-40">
+    <div class="text-right px-4 py-2 bg-black/40 backdrop-blur-sm rounded-lg border border-cyan-400/30 shadow-[0_0_15px_rgba(103,232,249,0.2)] glow-pulse">
+      <span class="block text-[10px] uppercase tracking-widest opacity-70 font-mono text-cyan-200">Current Time</span>
+      <span class="text-sm font-mono tracking-tighter text-cyan-300 font-bold drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]" id="clock">00:00:00</span>
+    </div>
+  </div>
+
+  <main class="relative h-screen w-full flex flex-col items-center justify-center">
+    <!-- CENTER CORE -->
+    <div class="relative w-[500px] h-[500px] flex items-center justify-center animate-float">
+      <!-- Edge-only glow rings (hollow center) - reduced glow -->
+      <div class="absolute w-80 h-80 rounded-full" style="box-shadow: inset 0 0 40px 15px rgba(255,255,255,0.1), 0 0 30px 6px rgba(255,255,255,0.2); animation: pulse-slow 3s ease-in-out infinite;"></div>
+      <div class="absolute w-80 h-80 rounded-full" style="box-shadow: inset 0 0 30px 8px rgba(226,232,240,0.08), 0 0 40px 8px rgba(226,232,240,0.15); animation: pulse-slow 3s ease-in-out infinite; animation-delay: 1s;"></div>
+
+      <div class="relative w-80 h-80 rounded-full border-2 border-white/40 flex items-center justify-center glow-ring overflow-hidden shadow-[0_0_20px_rgba(255,255,255,0.3),0_0_35px_rgba(226,232,240,0.25)]">
+        <!-- Rotating dashed inner ring -->
+        <div class="absolute inset-2 border border-dashed border-white/10 rounded-full animate-spin-slow"></div>
+
+        <!-- Conic light sweep ring -->
+        <div class="absolute inset-0 energy-core-base ring-conic animate-ring-rotate opacity-80"></div>
+
+        <!-- Smoke field (js populates .smoke) -->
+        <div class="core-smoke"></div>
+
+        <!-- Orbiting particles -->
+        <div class="absolute inset-0">
+          <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_#fff] animate-orbit"></span>
+          <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-primary/70 rounded-full shadow-[0_0_6px_#fff] animate-orbit" style="animation-duration: 14s; transform-origin: 0 0;"></span>
+        </div>
+
+        <!-- Energy core (pure CSS, no external image) -->
+        <div class="energy-core absolute inset-0"></div>
+
+        <!-- CENTER NAME: V E R O -->
+        <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <span class="text-core-name">V&nbsp;E&nbsp;R&nbsp;O</span>
+        </div>
+
+        <div class="absolute bottom-0 w-full h-1/2 energy-wave animate-wave"></div>
+        <div class="absolute bottom-0 w-full h-1/3 energy-wave animate-wave" style="animation-delay:1.5s;opacity:0.4;"></div>
+      </div>
+
+      <!-- Outer tracker ring -->
+      <div class="absolute w-[420px] h-[420px] rounded-full border border-white/5 animate-spin-slow" style="animation-duration: 25s">
+        <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full shadow-[0_0_8px_#fff]"></div>
+      </div>
+    </div>
+
+    <!-- Tagline -->
+    <div class="absolute bottom-24 flex flex-col items-center gap-6 text-center">
+      <div class="flex items-center gap-3">
+        <span class="h-[1px] w-12 bg-gradient-to-r from-transparent to-cyan-400/60 shadow-[0_0_8px_rgba(103,232,249,0.5)]"></span>
+        <p class="text-xs uppercase tracking-[0.4em] font-mono text-cyan-300 font-semibold">J.A.R.V.I.S — STANDING BY</p>
+        <span class="h-[1px] w-12 bg-gradient-to-l from-transparent to-cyan-400/60 shadow-[0_0_8px_rgba(103,232,249,0.5)]"></span>
+      </div>
+      <p class="text-[10px] tracking-widest opacity-60 font-mono italic max-w-xs leading-relaxed text-slate-300">Acknowledged, Sir. Systems initialized. All protocols operational and ready to assist.</p>
+    </div>
+
+    <!-- Voice Button - CENTER BOTTOM -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-40">
+      <button id="voiceBtn" class="btn-round rounded-full border border-cyan-400/40 bg-gradient-to-br from-cyan-500/8 to-blue-500/5 flex items-center justify-center hover:bg-cyan-500/15 transition-all shadow-[0_0_15px_rgba(103,232,249,0.25)] hover:shadow-[0_0_20px_rgba(103,232,249,0.35)]" style="width: 50px; height: 50px;" title="Enable voice (Click to start/stop)" aria-pressed="false">
+        <span id="micIcon" class="material-symbols-outlined text-cyan-300 drop-shadow-[0_0_10px_rgba(103,232,249,1)]" style="font-size: 26px;">mic</span>
+        <div id="voiceDots" class="hidden flex items-center gap-0.5">
+          <div class="voice-dot w-1.5 h-1.5 bg-cyan-300 rounded-full"></div>
+          <div class="voice-dot w-1.5 h-1.5 bg-cyan-300 rounded-full" style="animation-delay: 0.1s;"></div>
+          <div class="voice-dot w-1.5 h-1.5 bg-cyan-300 rounded-full" style="animation-delay: 0.2s;"></div>
+          <div class="voice-dot w-1.5 h-1.5 bg-cyan-300 rounded-full" style="animation-delay: 0.3s;"></div>
+        </div>
+      </button>
+    </div>
+
+    <!-- CONTROL STRIP: menu + history + text (bottom right) -->
+    <div class="absolute bottom-8 right-8 flex items-center gap-3 z-40">
+      <!-- Menu Button -->
+      <div class="relative">
+        <button id="menuBtn" class="btn-round w-12 h-12 rounded-full border border-cyan-400/35 bg-gradient-to-br from-cyan-500/6 to-blue-500/3 flex items-center justify-center hover:bg-cyan-500/12 transition-all shadow-[0_0_12px_rgba(103,232,249,0.2)] hover:shadow-[0_0_18px_rgba(103,232,249,0.3)]">
+          <span class="material-symbols-outlined text-xl text-cyan-300 drop-shadow-[0_0_6px_rgba(103,232,249,0.6)]">menu</span><span class="sr-only">Menu</span>
+        </button>
+        <!-- Menu Panel -->
+        <div id="menuPanel" class="hidden absolute bottom-14 right-0 w-56 bg-black/75 backdrop-blur-md border border-cyan-400/30 rounded-md shadow-[0_0_15px_rgba(103,232,249,0.2)] p-2 animate-fade-in">
+          <div class="flex flex-col divide-y divide-cyan-400/20">
+            <button class="w-full text-left px-3 py-2 hover:bg-cyan-500/20 rounded flex items-center gap-2 text-cyan-100 transition-all hover:shadow-[0_0_15px_rgba(103,232,249,0.2)]">
+              <span class="material-symbols-outlined text-base text-cyan-300 drop-shadow-[0_0_4px_rgba(103,232,249,0.6)]">dns</span><span class="text-sm font-medium">Systems</span>
+            </button>
+            <button class="w-full text-left px-3 py-2 hover:bg-cyan-500/20 rounded flex items-center gap-2 text-cyan-100 transition-all hover:shadow-[0_0_15px_rgba(103,232,249,0.2)]">
+              <span class="material-symbols-outlined text-base text-cyan-300 drop-shadow-[0_0_4px_rgba(103,232,249,0.6)]">monitor_heart</span><span class="text-sm font-medium">Diagnostics</span>
+            </button>
+            <button class="w-full text-left px-3 py-2 hover:bg-cyan-500/20 rounded flex items-center gap-2 text-cyan-100 transition-all hover:shadow-[0_0_15px_rgba(103,232,249,0.2)]">
+              <span class="material-symbols-outlined text-base text-cyan-300 drop-shadow-[0_0_4px_rgba(103,232,249,0.6)]">article</span><span class="text-sm font-medium">Logs</span>
+            </button>
+            <button class="w-full text-left px-3 py-2 hover:bg-cyan-500/20 rounded flex items-center gap-2 text-cyan-100 transition-all hover:shadow-[0_0_15px_rgba(103,232,249,0.2)]">
+              <span class="material-symbols-outlined text-base text-cyan-300 drop-shadow-[0_0_4px_rgba(103,232,249,0.6)]">info</span><span class="text-sm font-medium">About</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Button -->
+      <button id="historyBtn" class="btn-round w-12 h-12 rounded-full border border-cyan-400/35 bg-gradient-to-br from-cyan-500/6 to-blue-500/3 flex items-center justify-center hover:bg-cyan-500/12 transition-all shadow-[0_0_12px_rgba(103,232,249,0.2)] hover:shadow-[0_0_18px_rgba(103,232,249,0.3)]" title="Chat History">
+        <span class="material-symbols-outlined text-xl text-cyan-300 drop-shadow-[0_0_6px_rgba(103,232,249,0.6)]">history</span>
+      </button>
+
+      <!-- Text Button -->
+      <button id="textBtn" class="btn-round w-12 h-12 rounded-full border border-cyan-400/35 bg-gradient-to-br from-cyan-500/6 to-blue-500/3 flex items-center justify-center hover:bg-cyan-500/12 transition-all shadow-[0_0_12px_rgba(103,232,249,0.2)] hover:shadow-[0_0_18px_rgba(103,232,249,0.3)]" title="Open text input (Click to type commands)" aria-haspopup="true" aria-expanded="false">
+        <span class="material-symbols-outlined text-xl text-cyan-300 drop-shadow-[0_0_6px_rgba(103,232,249,0.6)]">keyboard</span>
+      </button>
+    </div>
+
+    <!-- History Panel (animated) -->
+    <div id="historyPanel" class="history-panel absolute bottom-24 right-8 z-40">
+      <div class="glass-panel w-80 max-h-[400px] flex flex-col rounded-xl overflow-hidden shadow-[0_0_30px_rgba(103,232,249,0.15)]">
+        <div class="px-4 py-3 border-b border-cyan-400/20 flex items-center justify-between bg-cyan-400/5">
+          <span class="text-xs font-mono uppercase tracking-widest text-cyan-300 font-bold">Chat History</span>
+          <span class="material-symbols-outlined text-sm text-cyan-400/50">auto_awesome</span>
+        </div>
+        <div id="historyList" class="p-3 overflow-y-auto custom-scrollbar flex flex-col gap-3 min-h-[100px]">
+          <!-- History items go here -->
+          <div class="text-[10px] text-cyan-200/40 font-mono italic text-center py-4">No recent activity logged...</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Command Box (animated) -->
+    <div id="commandBox" class="command-box absolute bottom-28 right-8 z-40">
+      <div class="flex items-center gap-2 bg-black/70 backdrop-blur-md border border-cyan-400/35 rounded-full pl-4 pr-2 py-2 shadow-[0_0_15px_rgba(103,232,249,0.25)]">
+        <input id="textInput" type="text" placeholder="Type your command…" class="bg-transparent outline-none text-sm w-72 placeholder-cyan-200/40 text-cyan-100 font-medium" />
+        <button id="sendBtn" class="btn-round w-10 h-10 rounded-full border border-cyan-400/40 bg-gradient-to-br from-cyan-500/8 to-blue-500/5 flex items-center justify-center hover:bg-cyan-500/15 transition-all shadow-[0_0_12px_rgba(103,232,249,0.25)] hover:shadow-[0_0_18px_rgba(103,232,249,0.4)]" aria-label="Send command" title="Send command">
+          <span class="material-symbols-outlined text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">send</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Voice listening indicator -->
+    <div id="voiceIndicator" class="hidden absolute bottom-28 left-1/2 -translate-x-1/2 z-40">
+      <div class="flex items-center gap-2 bg-black/80 backdrop-blur-md border-2 border-emerald-400/70 rounded-full px-4 py-2 shadow-[0_0_35px_rgba(16,185,129,0.6),0_0_50px_rgba(16,185,129,0.3)]">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,1)] animate-ping"></span>
+        <span class="text-xs font-mono text-emerald-200 font-bold drop-shadow-[0_0_6px_rgba(16,185,129,0.8)]">Listening… say your command</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Side bars stay same as original -->
+  <div class="fixed left-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-8">
+    <div class="flex flex-col gap-2">
+      <span class="text-[8px] uppercase tracking-tighter opacity-60 font-mono text-cyan-200">Memory Usage</span>
+      <div class="h-64 w-1 bg-white/5 relative overflow-hidden rounded-full shadow-[0_0_10px_rgba(103,232,249,0.05)]">
+        <div id="memoryBar" class="absolute bottom-0 w-full bg-gradient-to-t from-cyan-400 to-cyan-200 opacity-95 shadow-[0_0_15px_rgba(103,232,249,0.8)] transition-all duration-1000 ease-out" style="height: 45%;"></div>
+        <!-- Segment markers (refined for lean look) -->
+        <div class="absolute inset-0 flex flex-col justify-between py-4 pointer-events-none opacity-20">
+          <div class="w-full h-[0.5px] bg-cyan-100"></div>
+          <div class="w-full h-[0.5px] bg-cyan-100"></div>
+          <div class="w-full h-[0.5px] bg-cyan-100"></div>
+          <div class="w-full h-[0.5px] bg-cyan-100"></div>
+        </div>
+      </div>
+      <span id="memoryValue" class="text-[8px] font-mono text-cyan-300 font-bold mt-1 drop-shadow-[0_0_8px_rgba(103,232,249,0.6)]">45%</span>
+    </div>
+  </div>
+
+  <div class="fixed right-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-8 items-end">
+    <div class="flex flex-col gap-2 items-end">
+      <span class="text-[8px] uppercase tracking-tighter opacity-30 font-mono">Sync Rate</span>
+      <div class="h-32 w-[1px] bg-white/10 dark:bg-white/5 relative">
+        <div class="absolute top-4 -right-1 w-2 h-[1px] bg-primary"></div>
+        <div class="absolute top-12 -right-1 w-2 h-[1px] bg-primary opacity-50"></div>
+        <div class="absolute top-20 -right-1 w-2 h-[1px] bg-primary opacity-20"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/ui.js" defer></script>
+</body></html>

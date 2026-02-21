@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>J.A.R.V.I.S — Space UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/space.css" />
+</head>
+<body>
+  <!-- Layered Space Scene -->
+  <!-- Starfields -->
+  <canvas id="starfield-back" aria-hidden="true"></canvas>
+  <canvas id="starfield-front" aria-hidden="true"></canvas>
+  <!-- Galaxy canvas (procedural milky way) -->
+  <canvas id="galaxy" aria-hidden="true"></canvas>
+  <div id="nebula" aria-hidden="true"></div>
+  <!-- Light source and aurora -->
+  <div id="light-sun" aria-hidden="true"></div>
+  <div id="aurora" aria-hidden="true"></div>
+
+  <!-- Parallax Planets -->
+  <div class="planets" aria-hidden="true">
+    <div class="planet planet-a" data-depth="0.1"></div>
+    <div class="planet planet-b" data-depth="0.2"></div>
+    <div class="planet planet-c" data-depth="0.35"></div>
+    <div class="planet planet-d" data-depth="0.6"></div>
+    <!-- Optional ringed planet overlay -->
+    <svg class="ring" viewBox="0 0 800 800" width="520" height="520" aria-hidden="true" style="position:absolute; right:2%; bottom:2%; z-index:4; opacity:0.35; filter: blur(0.2px);">
+      <defs>
+        <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#c2a6ff" stop-opacity="0"/>
+          <stop offset="40%" stop-color="#c2a6ff" stop-opacity="0.6"/>
+          <stop offset="70%" stop-color="#9bdfff" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#9bdfff" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="400" cy="400" rx="360" ry="110" fill="none" stroke="url(#rg)" stroke-width="6" transform="rotate(-12 400 400)" />
+    </svg>
+  </div>
+
+  <!-- Title Layer -->
+  <header class="title-layer">
+    <h1 class="title" aria-label="JARVIS">
+      <span>J</span><span>.</span><span>A</span><span>.</span><span>R</span><span>.</span><span>V</span><span>.</span><span>I</span><span>.</span><span>S</span>
+    </h1>
+    <p class="subtitle">Just A Rather Very Intelligent System</p>
+  </header>
+
+  <!-- Floating HUD elements -->
+  <div class="hud">
+    <div class="hud-panel">
+      <div class="dot"></div><span>VELOCITY</span><b id="vel">0.002</b>
+    </div>
+    <div class="hud-panel">
+      <div class="dot"></div><span>SECTOR</span><b id="sec">M-42</b>
+    </div>
+    <div class="hud-panel">
+      <div class="dot"></div><span>STARFIELD</span><b id="stars">ONLINE</b>
+    </div>
+  </div>
+
+  <!-- Shooting Stars Layer -->
+  <div id="shooting-stars" aria-hidden="true"></div>
+
+  <script src="assets/space.js" defer></script>
+</body>
+</html>

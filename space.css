@@ -1,0 +1,150 @@
+/* Space UI Styles */
+:root {
+  --silver: #e2e8f0;
+  --silver-2: #94a3b8;
+  --cyan: #67e8f9;
+  --cyan-bright: #22d3ee;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+  --purple-glow: #c084fc;
+  --bg: #000;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: radial-gradient(140% 140% at 50% 60%, #020617 0%, #000 60%);
+  color: var(--silver);
+  font-family: 'Orbitron', system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  animation: cam-drift 30s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Starfield canvas */
+#starfield-back, #starfield-front, #galaxy { position: fixed; inset: 0; display: block; background: transparent; }
+#starfield-back { z-index: 0; opacity: 0.8; }
+#galaxy { z-index: 1; opacity: 0.75; filter: saturate(150%) brightness(120%) blur(1px); }
+#starfield-front { z-index: 2; }
+
+/* Nebula wisps and supplemental light */
+#nebula {
+  position: fixed; inset: -10%; z-index: 3; pointer-events: none;
+  background:
+    radial-gradient(60% 40% at 30% 30%, rgba(59, 130, 246, 0.25), transparent 70%),
+    radial-gradient(60% 40% at 70% 70%, rgba(139, 92, 246, 0.2), transparent 70%),
+    radial-gradient(80% 60% at 50% 50%, rgba(34, 211, 238, 0.15), transparent 80%);
+  mix-blend-mode: screen;
+  animation: nebula-drift 40s ease-in-out infinite;
+  filter: brightness(1.2) saturate(1.4);
+}
+
+#light-sun {
+  position: fixed; top: -15%; left: -10%; width: 70vmax; height: 70vmax; border-radius: 50%; z-index: 2; 
+  pointer-events: none; opacity: 0.45; 
+  background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.95), rgba(34, 211, 238, 0.6) 25%, transparent 60%); 
+  filter: blur(15px) saturate(140%);
+}
+
+#aurora {
+  position: fixed; inset: 0; z-index: 3; pointer-events: none; 
+  background: 
+    radial-gradient(70% 25% at 50% 95%, rgba(34, 211, 238, 0.2), transparent 70%), 
+    radial-gradient(60% 20% at 40% 100%, rgba(139, 92, 246, 0.15), transparent 70%); 
+  animation: aurora-wave 16s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+  mix-blend-mode: screen;
+}
+
+@keyframes aurora-wave { 0%, 100% { transform: translateY(0) scaleX(1); } 50% { transform: translateY(8px) scaleX(1.05); } }
+@keyframes nebula-drift { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(20px, -15px, 0) scale(1.05); } }
+
+/* Planets */
+.planets { position: fixed; inset: 0; z-index: 4; pointer-events: none; }
+.planet { 
+  position: absolute; border-radius: 9999px; filter: saturate(130%); 
+  box-shadow: 0 0 80px rgba(255, 255, 255, 0.08), inset 0 0 50px rgba(255, 255, 255, 0.05); 
+}
+.planet::after { 
+  content: ""; position: absolute; inset: -15px; border-radius: 9999px; 
+  box-shadow: 0 0 80px rgba(34, 211, 238, 0.15), 0 0 140px rgba(139, 92, 246, 0.1); 
+  mix-blend-mode: screen; pointer-events: none; 
+}
+
+.planet-a {
+  width: 240px; height: 240px; left: 10%; top: 20%; 
+  box-shadow: 0 0 100px rgba(59, 130, 246, 0.2), inset 0 0 70px rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(160px 100px at 65% 65%, rgba(255, 255, 255, 0.3), transparent 65%),
+    conic-gradient(from 45deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.1), transparent 75%);
+  background-color: #0f172a;
+}
+.planet-b {
+  width: 160px; height: 160px; right: 15%; top: 25%; 
+  box-shadow: 0 0 100px rgba(168, 85, 247, 0.15), inset 0 0 60px rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(100px 70px at 40% 40%, rgba(255, 255, 255, 0.25), transparent 65%),
+    conic-gradient(from -30deg, rgba(147, 51, 234, 0.2), rgba(168, 85, 247, 0.1), transparent 75%);
+  background-color: #1e1b4b;
+}
+.planet-c {
+  width: 120px; height: 120px; left: 20%; bottom: 15%; 
+  box-shadow: 0 0 90px rgba(34, 211, 238, 0.15), inset 0 0 50px rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(80px 50px at 60% 40%, rgba(255, 255, 255, 0.25), transparent 65%),
+    conic-gradient(from 90deg, rgba(34, 211, 238, 0.2), transparent 75%);
+  background-color: #082f49;
+}
+.planet-d {
+  width: 300px; height: 300px; right: 8%; bottom: 10%; 
+  box-shadow: 0 0 120px rgba(139, 92, 246, 0.15), inset 0 0 80px rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(200px 100px at 50% 50%, rgba(255, 255, 255, 0.35), transparent 65%),
+    conic-gradient(from 70deg, rgba(124, 58, 237, 0.18), transparent 75%);
+  background-color: #020617;
+}
+
+@keyframes cam-drift { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(0, -10px, 0) scale(1.01); } }
+
+/* Title + Cinematic Bloom */
+.title-layer { position: fixed; inset: 0; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+.title {
+  margin: 0; letter-spacing: 0.2em;
+  font-size: clamp(50px, 10vw, 180px);
+  font-weight: 900; color: #fff;
+  text-shadow:
+    0 0 25px rgba(255, 255, 255, 0.5),
+    0 0 70px rgba(34, 211, 238, 0.5),
+    0 0 130px rgba(139, 92, 246, 0.4),
+    0 0 200px rgba(34, 211, 238, 0.2);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
+  animation: title-float 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes title-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -12px, 0); } }
+
+.subtitle { 
+  margin-top: 15px; color: var(--silver-2); letter-spacing: 0.4em; 
+  font-weight: 500; font-size: clamp(12px, 1.5vw, 16px); 
+  opacity: 0.9; text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+}
+
+/* HUD Glassmorphism */
+.hud-panel {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.1);
+}
+
+.hud-panel .dot { box-shadow: 0 0 15px #88ffc6, 0 0 30px rgba(136, 255, 198, 0.5); }
+
+/* Cinematic Vignette */
+body::after {
+  content: ""; position: fixed; inset: -15%; pointer-events: none; z-index: 7;
+  background:
+    radial-gradient(120% 120% at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.6) 80%),
+    radial-gradient(100% 100% at 20% 40%, rgba(34, 211, 238, 0.1), transparent 60%),
+    radial-gradient(100% 100% at 80% 60%, rgba(139, 92, 246, 0.08), transparent 60%);
+  mix-blend-mode: screen;
+  filter: blur(10px);
+}
